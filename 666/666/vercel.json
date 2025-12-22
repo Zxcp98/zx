@@ -4,7 +4,7 @@
     
     { "source": "/loader", "destination": "/loader.html" },
     
-    { "source": "/vorahub", "destination": "/api/main-loader.js" },
+    { "source": "/main-loader", "destination": "/api/main-loader.js" },
     
     { "source": "/(.*)", "destination": "/denied.html" } 
   ],
@@ -16,7 +16,7 @@
       ]
     },
     {
-      "source": "/api/vorahub.js",
+      "source": "/api/main-loader.js",
       "headers": [
         { "key": "Cache-Control", "value": "no-store" },
         { "key": "Access-Control-Allow-Origin", "value": "*" }
