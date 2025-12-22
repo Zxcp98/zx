@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Triplesixxx Community</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+    --bg: #0e111b;
+    --panel: #13172a;
+    --panel-soft: #171c33;
+    --fg: #e8eaf0;
+    --muted: #9aa0b5;
+    --accent: #7aa2ff;
+    --kw: #7aa2ff;
+    --str: #f2a97d;
+    --com: #7fbf7f;
+    --num: #b8d7a3;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Inter, system-ui, sans-serif;
+    background: radial-gradient(1200px 600px at 50% -200px, #1b2140 0%, var(--bg) 60%);
+    color: var(--fg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    width: min(960px, 94vw);
+    background: linear-gradient(180deg, var(--panel), var(--panel-soft));
+    border-radius: 16px;
+    padding: 22px 22px 18px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #000000, #e6ff5b);
+    display: grid;
+    place-items: center;
+    font-weight: 600;
+    color: #0e111b;
+}
+
+.brand-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--fg);
+}
+
+.editor {
+    position: relative;
+    border-radius: 14px;
+    background: #0c1020;
+    padding: 16px 48px 16px 16px;
+    overflow: auto;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+pre {
+    margin: 0;
+    white-space: pre;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 14.5px;
+    line-height: 1.6;
+}
+
+.kw { color: var(--kw); font-weight: 500; }
+.str { color: var(--str); }
+.com { color: var(--com); }
+.num { color: var(--num); }
+
+.copy {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: 0;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    color: var(--fg);
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.copy:hover { background: rgba(255,255,255,0.14); }
+
+.footer {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+}
+
+.footer-link {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    text-decoration: underline;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="brand">
+            <div class="brand-mark">📜</div>
+            <div class="brand-text">Triplesixxx Loadstring | Content</div>
+        </div>
+    </div>
+
+    <div class="editor" aria-label="Read-only code editor" role="region">
+        <button class="copy" aria-label="Copy code">Copy</button>
+        <pre><code class="lua" id="code"></code></pre>
+    </div>
+
+    <div class="footer">This Script Protected by Triplesixxx Community</a> | <a href="https://discord.com/invite/J6mCQ98rck" target="_blank" rel="noopener" class="footer-link">Triplesixxx Community</a></div>
+</div>
+
+<script>
+const luaSource = `_G.key = "KEY"; -- remove if not required
+loadstring(game:HttpGet("example.com"))()`;
+
+function escapeHTML(v) {
+    return v.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+}
+
+function highlightLua(src) {
+    let t = escapeHTML(src);
+    const strRe = /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g;
+    let parts = [];
+    let last = 0;
+    let m;
+
+    while ((m = strRe.exec(t))) {
+        if (m.index > last) parts.push({t:"code", v:t.slice(last, m.index)});
+        parts.push({t:"str", v:m[0]});
+        last = strRe.lastIndex;
+    }
+    if (last < t.length) parts.push({t:"code", v:t.slice(last)});
+
+    const kw = /\b(local|function|end|if|then|else|elseif|for|while|repeat|until|return|not|and|or|do|in|true|false|nil)\b/g;
+    const api = /\b(loadstring|game|HttpGet)\b/g;
+    const num = /\b(\d+(?:\.\d+)?)\b/g;
+
+    function paint(s) {
+        return s
+            .replace(num, '<span class="num">$1</span>')
+            .replace(kw, '<span class="kw">$1</span>')
+            .replace(api, '<span class="kw">$1</span>');
+    }
+
+    return parts.map(p => {
+        if (p.t === "str") return '<span class="str">' + p.v + '</span>';
+        return p.v.split("\n").map(line => {
+            const i = line.indexOf("--");
+            if (i === -1) return paint(line);
+            return paint(line.slice(0,i)) + '<span class="com">' + line.slice(i) + '</span>';
+        }).join("\n");
+    }).join("");
+}
+
+const codeEl = document.getElementById("code");
+codeEl.innerHTML = highlightLua(luaSource);
+
+function flash(txt) {
+    const b = document.querySelector('.copy');
+    const o = b.textContent;
+    b.textContent = txt;
+    setTimeout(() => b.textContent = o, 800);
+}
+
+document.querySelector('.copy').addEventListener('click', async () => {
+    try {
+        await navigator.clipboard.writeText(luaSource);
+        flash('Copied');
+    } catch {
+        const t = document.createElement('textarea');
+        t.value = luaSource;
+        document.body.appendChild(t);
+        t.select();
+        document.execCommand('copy');
+        t.remove();
+        flash('Copied');
+    }
+});
+</script>
+</body>
+</html>

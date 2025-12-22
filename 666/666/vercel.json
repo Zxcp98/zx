@@ -1,0 +1,26 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/loader.html" }, 
+    
+    { "source": "/loader", "destination": "/loader.html" },
+    
+    { "source": "/vorahub", "destination": "/api/vorahub.js" },
+    
+    { "source": "/(.*)", "destination": "/denied.html" } 
+  ],
+  "headers": [
+    {
+      "source": "/666.ico",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/api/vorahub.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
+  ]
+}
