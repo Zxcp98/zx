@@ -4,7 +4,7 @@
     
     { "source": "/loader", "destination": "/loader.html" },
     
-    { "source": "/vorahub", "destination": "/api/vorahub.js" },
+    { "source": "/vorahub", "destination": "/api/main-loader.js" },
     
     { "source": "/(.*)", "destination": "/denied.html" } 
   ],
